@@ -23,12 +23,12 @@ func main() {
 
 	repoURL := "https://github.com/skittlexyz/templates"
 	destDir := ""
-	templatePath := "templates"
+	templatePath := ""
 
 	templates := [...]Template{
 		{
 			Name:        "QuickSvelte",
-			Path:        "quick-svelte",
+			Path:        "templates/quick-svelte",
 			Description: "Svelte, TypeScript, shadcn/ui, Lucide.",
 			Author:      "skittlexyz",
 		},
@@ -85,12 +85,12 @@ func main() {
 
 			scanner.Scan()
 			destDir = scanner.Text()
-			templatePath += templates[0].Path
+			templatePath = templates[0].Path
 
 			fmt.Print("\033[H\033[2J")
 			downloadTemplate(repoURL, destDir, templatePath)
 
-			fmt.Print("\033[H\033[2J")
+			//fmt.Print("\033[H\033[2J")
 
 			printBanner()
 

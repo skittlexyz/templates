@@ -1,7 +1,6 @@
 package main
 
 import (
-	"bufio"
 	"fmt"
 	"os"
 	"os/exec"
@@ -19,7 +18,7 @@ type Template struct {
 }
 
 func main() {
-	scanner := bufio.NewScanner(os.Stdin)
+	// scanner := bufio.NewScanner(os.Stdin)
 
 	repoURL := "https://github.com/skittlexyz/templates"
 	destDir := ""
@@ -83,8 +82,15 @@ func main() {
 			fmt.Println(color.CyanString(" ╭─────────────────────────╯"))
 			fmt.Print(color.CyanString(" ╰── -> "))
 
-			scanner.Scan()
-			destDir = scanner.Text()
+			tempDestDir := ""
+
+			_, err := fmt.Scan(&tempDestDir)
+			if err != nil {
+				fmt.Printf("Error reading user input: %v\n", err)
+				return
+			}
+
+			destDir = tempDestDir
 			templatePath = templates[0].Path
 
 			fmt.Print("\033[H\033[2J")
@@ -126,6 +132,14 @@ func downloadTemplate(repoURL, destDir, templatePath string) {
 		return
 	}
 	if err := removeFile(filepath.Join(destDir, ".gitignore")); err != nil {
+		fmt.Printf("Error removing .gitignore file: %v\n", err)
+		return
+	}
+	if err := removeFile(filepath.Join(destDir, "install_wizard.ps1")); err != nil {
+		fmt.Printf("Error removing .gitignore file: %v\n", err)
+		return
+	}
+	if err := removeFile(filepath.Join(destDir, "install_wizard.sh")); err != nil {
 		fmt.Printf("Error removing .gitignore file: %v\n", err)
 		return
 	}

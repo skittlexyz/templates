@@ -1,10 +1,12 @@
 package main
 
 import (
+	"bufio"
 	"fmt"
 	"os"
 	"os/exec"
 	"path/filepath"
+	"strings"
 
 	"github.com/eiannone/keyboard"
 	"github.com/fatih/color"
@@ -18,7 +20,7 @@ type Template struct {
 }
 
 func main() {
-	// scanner := bufio.NewScanner(os.Stdin)
+	reader := bufio.NewReader(os.Stdin)
 
 	repoURL := "https://github.com/skittlexyz/templates"
 	destDir := ""
@@ -82,15 +84,13 @@ func main() {
 			fmt.Println(color.CyanString(" ╭─────────────────────────╯"))
 			fmt.Print(color.CyanString(" ╰── -> "))
 
-			tempDestDir := ""
-
-			_, err := fmt.Scan(&tempDestDir)
+			tempDestDir, err := reader.ReadString('\n')
 			if err != nil {
 				fmt.Printf("Error reading user input: %v\n", err)
 				return
 			}
 
-			destDir = tempDestDir
+			destDir = strings.TrimSpace(tempDestDir)
 			templatePath = templates[0].Path
 
 			fmt.Print("\033[H\033[2J")

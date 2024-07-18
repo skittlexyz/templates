@@ -129,6 +129,14 @@ func downloadTemplate(repoURL, destDir, templatePath string) {
 		fmt.Printf("Error removing .gitignore file: %v\n", err)
 		return
 	}
+	if err := removeFolder(filepath.Join(destDir, "templates")); err != nil {
+		fmt.Printf("Error removing templates folder: %v\n", err)
+		return
+	}
+	if err := removeFolder(filepath.Join(destDir, "wizard")); err != nil {
+		fmt.Printf("Error removing templates folder: %v\n", err)
+		return
+	}
 }
 
 func cloneRepository(repoURL, destDir string) error {
@@ -158,4 +166,8 @@ func moveFolderContents(src, dest string) error {
 
 func removeFile(filePath string) error {
 	return os.Remove(filePath)
+}
+
+func removeFolder(folderPath string) error {
+	return os.RemoveAll(folderPath)
 }

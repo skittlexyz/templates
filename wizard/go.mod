@@ -1,4 +1,4 @@
-module templates
+module templates_installer
 
 go 1.22.5
 

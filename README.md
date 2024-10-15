@@ -12,5 +12,5 @@ node index.js
 ```
 > &nbsp;📌 To use it, you must have Git installed and configured in your environment variable path.
 
-You can also submit your own templates to this project by contacting me. My contact info is on my [profile](https://github.com/skittlexyz) README.
+You can also submit your own templates to this project by contacting me. My contact info is on my [profile](https://github.com/skittlexyz).
 Thanks for using and reading! Feel free to open an issue or contact me for improvements and/or comments.

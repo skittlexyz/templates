@@ -9,7 +9,7 @@
   "author": "",
   "license": "ISC",
   "description": "",
-  "type": "commonjs",
+  "type": "module",
   "dependencies": {
     "cli-color": "^2.0.4",
     "figlet": "^1.8.0",

@@ -14,3 +14,7 @@ node index.js
 
 You can also submit your own templates to this project by contacting me. My contact info is on my [profile](https://github.com/skittlexyz).
 Thanks for using and reading! Feel free to open an issue or contact me for improvements and/or comments.
+
+### TODO:
+
+- Fetch JSON file from repository to prevent clones with limited versions.

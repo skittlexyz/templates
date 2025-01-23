@@ -5,8 +5,8 @@
         "description": "A frontend template with Svelte, Typescript, Shadcn-Svelte and Lucide Icons."
     },
     {
-        name: "Typescript",
-        description: "A backend template for Typescript with tsx and tsup.",
-        url: "https://github.com/skittlexyz/typescript"
+        "name": "Typescript",
+        "description": "A backend template for Typescript with tsx and tsup.",
+        "url": "https://github.com/skittlexyz/typescript"
     }
 ]

@@ -7,6 +7,8 @@ import { exec } from "node:child_process";
 
 const execPromisified = util.promisify(exec);
 
+const TEMPLATES_URL = "https://cdn.statically.io/gh/skittlexyz/templates/refs/heads/main/templates.json";
+
 async function ps(command) {
     try {
         const { stdout, stderr } = await execPromisified(command);
@@ -38,13 +40,13 @@ const link = (url, label) => {
 
 let templates;
 
-try {
-    const data = fs.readFileSync("./templates.json", "utf8");
-    templates = JSON.parse(data);
-} catch (err) {
-    console.log(clc.red("  [!] An error has occured while reading the templates."));
-    process.exit();
-}
+// try {
+//     const data = fs.readFileSync("./templates.json", "utf8");
+//     templates = JSON.parse(data);
+// } catch (err) {
+//     console.log(clc.red("  [!] An error has occured while reading the templates."));
+//     process.exit();
+// }
 
 function banner() {
     console.log(
@@ -79,10 +81,14 @@ async function options() {
             console.log(`  ${clc.yellow(`[${i + 1}]`)} ${link(templates[i].url, templates[i].name)}: ${templates[i].description}`);
         }
         console.log();
+        console.log(`  ${clc.red("[X] Exit.")}\n`);
 
         const input = await promptUser("  [i] Enter option: ");
 
-        if (!isNaN(input) && input >= 1 && input <= templates.length || input == "easteregg") {
+        if (input.toLowerCase() === "x") {
+            process.stdout.write("\x1b[2J\x1b[H");
+            process.exit();
+        } else if (!isNaN(input) && input >= 1 && input <= templates.length || input == "easteregg") {
             if (input == "easteregg") {
                 process.stdout.write("\x1b[2J\x1b[H");
                 banner();
@@ -99,6 +105,9 @@ async function options() {
 
 
 (async () => {
+    templates = await fetch(TEMPLATES_URL);
+    templates = await templates.json();
+
     process.stdout.write("\x1b[2J\x1b[H");
 
     banner();
@@ -112,7 +121,7 @@ async function options() {
         if (template) {
             console.log(clc.green(`\n  [i] Downloading ${template.name}!\n`));
             await ps(`git clone ${template.url}`);
-            console.log(clc.green("  [i] Done!\n"));
+            console.log(clc.green("  [i] Done!"));
         } else {
             console.log(clc.red("  [!] No template selected."));
         }

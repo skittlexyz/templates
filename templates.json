@@ -8,5 +8,10 @@
         "name": "Typescript",
         "description": "A backend template for Typescript with tsx and tsup.",
         "url": "https://github.com/skittlexyz/typescript"
+    },
+    {
+        "name": "FastAPI SQL",
+        "url": "https://github.com/skittlexyz/fastapi-sql",
+        "description": "A backend template for Python with FastAPI and SQLAlchemy."
     }
 ]

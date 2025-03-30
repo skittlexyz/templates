@@ -1,4 +1,4 @@
-# templates
+# 📦 templates
 
 Templates is a easy way to setup a project within minutes or even seconds.
 With Templates you can look for the most accurate pre-made project for your idea, and git clone it directly from the cli.

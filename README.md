@@ -19,3 +19,4 @@ Thanks for using and reading! Feel free to open an issue or contact me for impro
 
 - <s>Fetch JSON file from repository to prevent clones with limited versions.</s>
 - Develop binary release versions or one-liner command so it's easier to use.
+- Add a simpler version, one liner CLI.

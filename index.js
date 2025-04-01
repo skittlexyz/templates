@@ -1,9 +1,10 @@
 import readline from 'readline';
-import clc from "cli-color";
-import figlet from "figlet";
-import fs from "fs";
-import util from "node:util";
-import { exec } from "node:child_process";
+import clc from 'cli-color';
+import figlet from 'figlet';
+import fs from 'fs';
+import util from 'node:util';
+import { exec } from 'node:child_process';
+import pathModule from 'path';
 
 const execPromisified = util.promisify(exec);
 
@@ -15,6 +16,11 @@ async function ps(command) {
         if (stderr) return stderr;
         return stdout;
     } catch (error) {
+        if (error.message.includes("already exists and is not an empty directory")) {
+            console.log(clc.red("  [!] Directory already exists and isn't empty."));
+            return null;
+        }
+        console.error("Error executing command:", error);
         return null;
     }
 }
@@ -40,14 +46,6 @@ const link = (url, label) => {
 
 let templates;
 
-// try {
-//     const data = fs.readFileSync("./templates.json", "utf8");
-//     templates = JSON.parse(data);
-// } catch (err) {
-//     console.log(clc.red("  [!] An error has occured while reading the templates."));
-//     process.exit();
-// }
-
 function banner() {
     console.log(
         clc.yellow(figlet.textSync(" templates!", {
@@ -69,8 +67,8 @@ async function promptUser(text) {
             if (input == "easteregg") {
                 console.log("\n  " + clc.yellow.bold("[i] Hello from the dev! Thanks for reading my code and using it, i appreciate it!\n"))
                 await promptUser("  [i] Press Enter to continue!\n");
-            } 
-            resolve(input);
+            }
+            resolve(input.trim());  // Ensure we resolve with trimmed input
         });
     });
 }
@@ -103,33 +101,82 @@ async function options() {
     }
 }
 
+function isValidPath(path) {
+    const pathRegex = /^(\/|([a-zA-Z]:\\))([^\0<>:"|?*]+(\\[^\0<>:"|?*]+)*)*$/;
+    return pathRegex.test(path);
+}
+
+async function checkAndCreateDirectory(path, folderName) {
+    try {
+        // If path is empty, use current directory
+        const basePath = path === "" ? process.cwd() : path;
+        
+        if (!isValidPath(basePath)) {
+            return null;
+        }
+
+        const resolvedPath = pathModule.resolve(basePath);
+        const templateDirName = folderName.toLowerCase().replace(" ", "_") + "-template";
+        const fullPath = pathModule.join(resolvedPath, templateDirName);
+
+        try {
+            const stats = await fs.promises.stat(resolvedPath);
+            if (!stats.isDirectory()) {
+                return null;
+            }
+        } catch (err) {
+            if (err.code === 'ENOENT') {
+                await fs.promises.mkdir(resolvedPath, { recursive: true });
+            } else {
+                return null;
+            }
+        }
+
+        return fullPath;
+    } catch (error) {
+        return null;
+    }
+}
 
 (async () => {
-    templates = await fetch(TEMPLATES_URL);
-    templates = await templates.json();
+    try {
+        templates = await fetch(TEMPLATES_URL);
+        templates = await templates.json();
 
-    process.stdout.write("\x1b[2J\x1b[H");
+        process.stdout.write("\x1b[2J\x1b[H");
 
-    banner();
+        banner();
 
-    if (!await ps("git --version")) {
-        console.log(clc.red("  [!] Git must be installed!\n"));
-        process.exit();
-    }
-
-    await options().then(async (template) => {
-        if (template) {
-            console.log(clc.green(`\n  [i] Downloading ${template.name}!\n`));
-            await ps(`git clone ${template.url}`);
-            console.log(clc.green("  [i] Done!"));
-        } else {
-            console.log(clc.red("  [!] No template selected."));
+        if (!await ps("git --version")) {
+            console.log(clc.red("  [!] Git must be installed!\n"));
+            process.exit();
         }
-    });
 
-    rl.close();
+        await options().then(async (template) => {
+            if (template) {
+                // Asking the user for the path input
+                await promptUser("  [i] Enter the path to clone the template folder (empty for current directory): ").then(async (path) => {
+                    const result = await checkAndCreateDirectory(path, template.name);
+                    if (result) {
+                        console.log(clc.green(`\n  [i] Downloading ${template.name}!\n`));
+                        const cloneResult = await ps(`git clone ${template.url} ${result}`);
+                        if (cloneResult) console.log(clc.green("  [i] Done!"));
+                    } else {
+                        console.log(clc.red("  [!] Invalid path or unable to create the directory."));
+                    }
+                })
+            } else {
+                console.log(clc.red("  [!] No template selected."));
+            }
+        });
 
-    if (!shouldExit) {
-        process.exit();
+    } catch (error) {
+        console.error("An error occurred:", error);
+    } finally {
+        rl.close();
+        console.log("");
+        if (!shouldExit) {
+            process.exit();
+        }
     }
 })();
